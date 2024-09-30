@@ -8,11 +8,13 @@ dotenv.config()
 
 const app = express();
 
-app.get("/products", (req,res) => {
+app.use(express.json()) //allows u sto accept JSON data in the req.body
+
+app.get("/api/products", (req,res) => {
     res.send("Server is ready")
 })
 
-app.post("/products", async (req, res) => {
+app.post("/api/products", async (req, res) => {
     const product = req.body; // user will send this data
 
     if(!product.name || !product.price || !product.image) {
@@ -30,6 +32,17 @@ app.post("/products", async (req, res) => {
     }
 })
 
+app.delete("/api/products/:id", async (req, res) => {
+    const {id} = req.params
+    //console.log("id:",id)
+    try {
+        await Product.findByIdAndDelete(id)
+        res.status(200).json({success: true, message: "Product deleted"
+        })
+    } catch (error) {
+        res.status(404).json({success:false, message: "Product not found"})
+    }
+})
 
 
 app.listen(5000, () => {
